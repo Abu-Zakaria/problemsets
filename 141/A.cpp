@@ -15,37 +15,79 @@ using namespace std;
     {                                         \
         PRINT_NO_LINE(stuff.at(i));           \
     }
+#define PRINTYES PRINT("YES")
+#define PRINTNO PRINT("NO")
+#define FOR(i, a) for (size_t(i) = 0; i < (a); ++(i))
+#define vecstr vector<string>
+#define vecint vector<int>
+#define isodd(x) x % 2 != 0
+#define iseven(x) x % 2 == 0
+#define all(x) (x).begin(), (x).end()
 
-void split_str(std::string const &str, const char delim,
-               std::vector<std::string> &out)
+pair<vecstr, vecstr> vec_str_get_uncommons(vector<string> &a, vector<string> b)
 {
-    // create a stream from the string
-    stringstream s(str);
+    vector<string> a_uncommons;
 
-    std::string s2;
-    while (getline(s, s2, delim))
+    for (size_t i = 0; i < a.size(); i++)
     {
-        out.push_back(s2); // store the string in s2
+        vector<string>::iterator it = find(all(b), a.at(i));
+        if (it != b.end())
+        {
+            b.erase(it);
+        }
+        else
+        {
+            a_uncommons.push_back(a.at(i));
+        }
     }
+    return {a_uncommons, b};
 }
 
-vector<string> vec_str_get_uncommons(vector<string> &a, vector<string> &b)
+std::vector<std::string> str_split_by_len(const std::string &str, int splitLength)
 {
-    for (size_t i = 0; i < ; i++)
+    int NumSubstrings = str.length() / splitLength;
+    std::vector<std::string> ret;
+
+    for (auto i = 0; i < NumSubstrings; i++)
     {
-        /* code */
+        ret.push_back(str.substr(i * splitLength, splitLength));
     }
+
+    // If there are leftover characters, create a shorter item at the end.
+    if (str.length() % splitLength != 0)
+    {
+        ret.push_back(str.substr(splitLength * NumSubstrings));
+    }
+
+    return ret;
 }
 
 void solve()
 {
     string a, b, x;
     cin >> a >> b >> x;
+
+    if (a.size() + b.size() != x.size())
+    {
+        PRINTNO;
+        return;
+    }
     vector<string> av, bv, xv;
-    char delim = '\0';
-    split_str(a, delim, av);
-    split_str(b, delim, bv);
-    split_str(x, delim, xv);
+
+    av = str_split_by_len(a, 1);
+    bv = str_split_by_len(b, 1);
+    xv = str_split_by_len(x, 1);
+    pair<vecstr, vecstr> p = vec_str_get_uncommons(av, xv);
+    pair<vecstr, vecstr> q = vec_str_get_uncommons(bv, p.second);
+
+    if (p.first.size() > 0 || q.first.size() > 0 || q.second.size() > 0)
+    {
+        PRINTNO;
+    }
+    else
+    {
+        PRINTYES;
+    }
 }
 
 int main()
